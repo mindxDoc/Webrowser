@@ -21,10 +21,18 @@ class Browser(qtw.QMainWindow):
 
     # loading url
     def load(self):
-        url = self.searchBar.text()
-        if not url.startswith("http"):
-            url = "https://" + url
-            self.webEngineView.load(QtCore.QUrl(url))
+        user_input = self.searchBar.text()
+        url = QtCore.QUrl.fromUserInput(user_input)
+        url.setScheme("https")
+        print(url)
+        # Use regular expression to check if the URL is a valid domain address
+        import re
+        pattern = r"^(?:http|ftp)s?://(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}$"
+        if re.match(pattern, url.toString()):
+            self.webEngineView.setUrl(url)
+        else:
+            url = "www.google.com/search?q=" + user_input
+            self.webEngineView.setUrl(QtCore.QUrl.fromUserInput(url))
     def backward(self):
         self.webEngineView.page().triggerAction(QWebEnginePage.WebAction.Back, checked=True)
     def reload(self):
